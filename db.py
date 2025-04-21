@@ -50,6 +50,18 @@ def get_games():
         'SELECT * FROM game'
     ).fetchall()
 
+def update_game(id: str, name: str, developer: str):
+    db = get_db()
+    db.execute(
+        """
+        UPDATE game
+        SET name = ?, developer = ?
+        WHERE id = ?;
+        """,
+        (name, developer, id)
+    )
+    db.commit()
+
 def delete_game(id: str):
     db = get_db()
     db.execute(

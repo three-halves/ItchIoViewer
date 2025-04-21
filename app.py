@@ -35,6 +35,11 @@ def create_app():
         db.delete_game(request.form["id"])
         return redirect(url_for('index'))
     
+    @app.route('/api/update', methods=['POST',])
+    def update():
+        db.update_game(request.form["id"], request.form["name"], request.form["developer"])
+        return redirect(url_for('index'))
+    
     @app.route('/api/games', methods=['GET',])
     def get_games():
         return json.dumps([tuple(row) for row in db.get_games()])

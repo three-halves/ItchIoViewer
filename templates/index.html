@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItchIoViewer</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
+</head>
+<body>
+    <p>Index Page!</p>
+    <form class="form" method="post">
+        <fieldset>
+            <legend>Create Row</legend>
+            <input type="text" id="name" name="name"/>
+            <input type="text" id="developer" name="developer"/>
+            <button type="submit">go</button>
+        </fieldset>
+    </form>
+
+    <form class="form" method="post">
+        <fieldset>
+            <legend>Update Row</legend>
+            <input type="number" id="id" name="id"/>
+            <input type="text" id="name" name="name" />
+            <input type="text" id="developer" name="developer"/>
+            <button type="submit">go</button>
+        </fieldset>
+    </form>
+
+    <form class="form" method="post" action="{{ url_for('delete') }}">
+        <fieldset>
+            <legend>Delete Row</legend>
+            <input type="number" id="id" name="id"/>
+            <button type="submit">go</button>
+        </fieldset>
+    </form>
+
+    <table id="table">
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>developer</th>
+        </tr>
+
+    </table>
+</body>
+<script>
+    const ROOT_URL = "/"
+    formButtons = Array.from(document.getElementsByClassName("form"));
+    formButtons.forEach((element) => element.addEventListener('submit', handleSubmit));
+
+    const tableRef = document.getElementById("table");
+    const tableBase = tableRef.innerHTML;
+
+    // initial render
+    render();
+
+    function handleSubmit(event) { 
+        let data = new FormData() 
+        // get form values
+        Array.from(event.srcElement.elements).forEach((element) => {
+            if (element.tagName.toLowerCase() == "input") {
+                // console.log(element.name + " : " + element.value)
+                data.append(element.name, element.value);
+            }
+        });
+
+        // make fetch call
+        fetch(event.srcElement.action == null ? ROOT_URL : event.srcElement.action, {
+            "method": "POST",
+            "body": data,
+        })
+        .then(render)
+
+        event.preventDefault();
+    }
+
+    // re-render the games table
+    function render() {
+        // console.log("render");
+        
+        const newTable = document.createElement("table");
+
+        fetch(ROOT_URL + "api/games")
+        .then(response => response.json())
+        .then((data) => {
+            // console.log(data);
+            for (const entry of data) {
+                // create row in table for each game
+                var tr = document.createElement("tr");
+                for (const key of entry) {
+                    var td = document.createElement("td");
+                    td.innerHTML = key;
+                    tr.appendChild(td);
+                }
+
+                newTable.appendChild(tr);
+            }
+            
+            tableRef.innerHTML = tableBase + newTable.innerHTML;
+        });
+
+    }
+</script>
+</html>

@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS game;
+
+CREATE TABLE game ( 
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    developer TEXT NOT NULL
+);

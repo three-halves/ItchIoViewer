@@ -30,12 +30,12 @@ def create_app():
 
         return render_template("index.html")
     
-    @app.route('/api/delete', methods=['POST',])
+    @app.route('/api/game/delete', methods=['POST',])
     def delete():
         db.delete_game(request.form["id"])
         return redirect(url_for('index'))
     
-    @app.route('/api/update', methods=['POST',])
+    @app.route('/api/game/update', methods=['POST',])
     def update():
         db.update_game(request.form["id"], request.form["name"], request.form["developer"])
         return redirect(url_for('index'))

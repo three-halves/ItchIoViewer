@@ -7,7 +7,6 @@
     <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
 </head>
 <body>
-    <p>Index Page!</p>
     <form class="form" method="post">
         <fieldset>
             <legend>Create Row</legend>
@@ -51,6 +50,7 @@
 
     const tableRef = document.getElementById("table");
     const tableBase = tableRef.innerHTML;
+    let selectedRow = null;
 
     // initial render
     render();
@@ -75,11 +75,22 @@
         event.preventDefault();
     }
 
+    function selectRow(row) {
+        if (selectedRow != null) deselectRow(selectedRow);    
+        selectedRow = row;
+        selectedRow.classList.add("selected");
+    }
+
+    function deselectRow(row) {
+        row.classList.remove("selected");
+        selectedRow = null;
+    }
+
     // re-render the games table
     function render() {
         // console.log("render");
         
-        const newTable = document.createElement("table");
+        tableRef.innerHTML = tableBase;
 
         fetch(ROOT_URL + "api/games")
         .then(response => response.json())
@@ -88,16 +99,21 @@
             for (const entry of data) {
                 // create row in table for each game
                 var tr = document.createElement("tr");
+
+                // click event
+                tr.addEventListener("click", function (e) {
+                    selectRow(this);
+                });
+
                 for (const key of entry) {
                     var td = document.createElement("td");
                     td.innerHTML = key;
                     tr.appendChild(td);
                 }
 
-                newTable.appendChild(tr);
+                tableRef.appendChild(tr);
             }
-            
-            tableRef.innerHTML = tableBase + newTable.innerHTML;
+        
         });
 
     }

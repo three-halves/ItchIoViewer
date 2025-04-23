@@ -7,41 +7,59 @@
     <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
 </head>
 <body>
-    <form class="form" method="post">
-        <fieldset>
-            <legend>Create Row</legend>
-            <input type="text" id="name" name="name"/>
-            <input type="text" id="developer" name="developer"/>
-            <button type="submit">go</button>
+    <div class="app-container">
+        <fieldset class="main">
+            <legend>ItchIoViewer</legend>
+            <form class="form" method="post">
+                <fieldset>
+                    <legend>Create Row</legend>
+                    <input type="text" id="name" name="name"/>
+                    <input type="text" id="developer" name="developer"/>
+                    <button type="submit">go</button>
+                </fieldset>
+            </form>
+    
+            <form class="form" method="post" action="{{ url_for('update') }}">
+                <fieldset>
+                    <legend>Update Row</legend>
+                    <input type="number" id="id" name="id"/>
+                    <input type="text" id="name" name="name" />
+                    <input type="text" id="developer" name="developer"/>
+                    <button type="submit">go</button>
+                </fieldset>
+            </form>
+    
+            <form class="form" method="post" action="{{ url_for('delete') }}">
+                <fieldset>
+                    <legend>Delete Row</legend>
+                    <input type="number" id="id" name="id"/>
+                    <button type="submit">go</button>
+                </fieldset>
+            </form>
+    
+            <table id="table">
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>developer</th>
+                </tr>
+    
+            </table>
         </fieldset>
-    </form>
-
-    <form class="form" method="post" action="{{ url_for('update') }}">
-        <fieldset>
-            <legend>Update Row</legend>
-            <input type="number" id="id" name="id"/>
-            <input type="text" id="name" name="name" />
-            <input type="text" id="developer" name="developer"/>
-            <button type="submit">go</button>
+    
+        <fieldset class="sidebar">
+            <legend>Info</legend>
+            <div id="game-info">
+                <p>{0}</p>
+                <p>{1}</p>
+                <p>{2}</p>
+                <p>{3}</p>
+                <p>{4}</p>
+                <p>{5}</p>
+                
+            </div>
         </fieldset>
-    </form>
-
-    <form class="form" method="post" action="{{ url_for('delete') }}">
-        <fieldset>
-            <legend>Delete Row</legend>
-            <input type="number" id="id" name="id"/>
-            <button type="submit">go</button>
-        </fieldset>
-    </form>
-
-    <table id="table">
-        <tr>
-            <th>id</th>
-            <th>name</th>
-            <th>developer</th>
-        </tr>
-
-    </table>
+    </div>
 </body>
 <script>
     const ROOT_URL = "/"
@@ -51,6 +69,52 @@
     const tableRef = document.getElementById("table");
     const tableBase = tableRef.innerHTML;
     let selectedRow = null;
+
+    class UI {
+        // htmelement as string with placeholders defined with curly braces
+        constructor(template) {
+            this.template = template;
+            this.render = this.render.bind(this);
+            this.format = this.format.bind(this);
+        }
+    
+        // render template with parameters and return innerhtml string
+        render(params) {
+            return this.template.format(params);
+        }
+    
+        format() {
+            var args = arguments;
+            return this.replace(/{(\d+)}/g, function(match, number) { 
+              return typeof args[number] != 'undefined'
+                ? args[number]
+                : match
+              ;
+            });
+          };
+    }
+
+    String.prototype.format = String.prototype.format ||
+    function () {
+        "use strict";
+        var str = this.toString();
+        if (arguments.length) {
+            var t = typeof arguments[0];
+            var key;
+            var args = ("string" === t || "number" === t) ?
+                Array.prototype.slice.call(arguments)
+                : arguments[0];
+
+            for (key in args) {
+                str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+            }
+        }
+
+        return str;
+    };
+
+    let sidebarRef = document.getElementById("game-info");
+    let sidebarUI = new UI(document.getElementById("game-info").innerHTML);
 
     // initial render
     render();
@@ -79,6 +143,13 @@
         if (selectedRow != null) deselectRow(selectedRow);    
         selectedRow = row;
         selectedRow.classList.add("selected");
+
+        // get clicked row
+        fetch(ROOT_URL + `api/game/${row.children[0].innerHTML}`)
+        .then(response => response.json())
+        .then((data) => {
+            sidebarRef.innerHTML = sidebarUI.render(data.slice(1));
+        });
     }
 
     function deselectRow(row) {

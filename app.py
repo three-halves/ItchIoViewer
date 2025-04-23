@@ -43,5 +43,10 @@ def create_app():
     @app.route('/api/games', methods=['GET',])
     def get_games():
         return json.dumps([tuple(row) for row in db.get_games()])
+
+
+    @app.route('/api/game/<id>', methods=['GET',])
+    def get_game(id):
+        return json.dumps(tuple(db.get_game(id)))
     
     return app

@@ -50,6 +50,12 @@ def get_games():
         'SELECT * FROM game'
     ).fetchall()
 
+def get_game(id):
+    return get_db().execute(
+        'SELECT * FROM game WHERE id = ?',
+        (id,)
+    ).fetchone()
+
 def update_game(id: str, name: str, developer: str):
     db = get_db()
     db.execute(

@@ -1,3 +1,18 @@
+.app-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+}
+
+.main {
+    width: 70vw;
+    resize: horizontal;
+    overflow: auto;
+}
+
+table {
+    width: 100%;
+}
+
 td, th {
     border: 1px solid black;
     padding: 4px;

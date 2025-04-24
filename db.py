@@ -40,7 +40,7 @@ def close_db(e=None):
 def add_game(data):
     db = get_db()
     db.execute(
-        'INSERT INTO game (name, developer) VALUES (:name, :developer)',
+        'INSERT INTO game (name, rating, developer, publisher, genre, store_links) VALUES (:name, :rating, :developer, :publisher, :genre, :store_links)',
         data
     )
     db.commit()

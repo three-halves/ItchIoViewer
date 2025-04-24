@@ -1,12 +1,18 @@
 .app-container {
     display: grid;
     grid-template-columns: auto 1fr;
+    margin-inline: 8rem;
+    margin-block: 2rem;
 }
 
 .main {
     width: 70vw;
     resize: horizontal;
-    overflow: auto;
+    overflow-x: scroll;
+}
+
+.sidebar {
+    overflow-x: scroll;
 }
 
 table {

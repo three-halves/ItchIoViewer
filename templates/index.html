@@ -55,7 +55,7 @@
     
         <fieldset class="sidebar">
             <legend>Info</legend>
-            <div id="info-placeholder"><p>[ This panel is left intentionally blank. ]</p></div>
+            <div id="info-placeholder"><p>[ This panel is intentionally left blank. ]</p></div>
             <div id="game-info" hidden>
                 <p>{0}</p>
                 <p>{1}</p>
@@ -76,6 +76,7 @@
     const tableRef = document.getElementById("table");
     const tableBase = tableRef.innerHTML;
     let selectedRow = null;
+    let selectedRowID = null;
     const infoPlaceholder = document.getElementById("info-placeholder");
 
     class UI {
@@ -150,13 +151,20 @@
     function selectRow(row) {
         if (selectedRow != null) deselectRow(selectedRow);    
         selectedRow = row;
+        selectedRowID = row.children[0].innerHTML;
         selectedRow.classList.add("selected");
 
         // get clicked row and render sidebar
-        fetch(ROOT_URL + `api/game/${row.children[0].innerHTML}`)
+        fetch(ROOT_URL + `api/game/${selectedRowID}`)
         .then(response => response.json())
-        .then((data) => {
-            sidebarRef.innerHTML = sidebarUI.render(data.slice(1));
+        .then(async (data) => {
+            sidebarRef.innerHTML = sidebarUI.render(
+                [data[1], 
+                data[2], 
+                data[3], 
+                await getAssociatedNamesFromTable("developer", selectedRowID), 
+                await getAssociatedNamesFromTable("publisher", selectedRowID),
+                 data[4]]);
             infoPlaceholder.hidden = true;
             sidebarRef.hidden = false;
         });
@@ -167,6 +175,26 @@
         selectedRow = null;
     }
 
+    // assumes name property is second and that proper api endpoints are implemented
+    async function getAssociatedNamesFromTable(table, gid) {
+        aString = "";
+        await fetch(ROOT_URL + `api/${table}s/${gid}`)
+        .then(response => response.json())
+        .then(data => {
+            try {
+                aString = data[0][1];
+                for (const asc of data.slice(1))
+                {
+                    aString += ", " + asc[1];
+                }
+            }
+            catch {
+                aString = "None";
+            }
+
+        });
+        return aString;
+    }
     // re-render the games table
     function render() {
         // console.log("render");
@@ -175,23 +203,24 @@
 
         fetch(ROOT_URL + "api/games")
         .then(response => response.json())
-        .then((data) => {
+        .then(async (data) => {
             // console.log(data);
             for (const entry of data) {
+                let id = entry[0];
                 // create row in table for each game
-                var tr = document.createElement("tr");
+                let tr = document.createElement("tr");
 
                 // click event
                 tr.addEventListener("click", function (e) {
                     selectRow(this);
                 });
 
-                for (var i = 0; i < 4; i++) {
+                // get developer name for main table
+                [id, entry[1], entry[2], await getAssociatedNamesFromTable("developer", id)].forEach(col => {
                     var td = document.createElement("td");
-                    console.log(entry);
-                    td.innerHTML = entry[i];
+                    td.innerHTML = col;
                     tr.appendChild(td);
-                }
+                });
 
                 tableRef.appendChild(tr);
             }

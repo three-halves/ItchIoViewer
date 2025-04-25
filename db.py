@@ -75,4 +75,14 @@ def delete_game(id: str):
         (id,)
     )
     db.commit()
+
+def get_table_by_game(table: str, relation: str, fk: str, gid: str):
+    return get_db().execute(
+        """SELECT id, name FROM {0}
+        JOIN {1}
+        ON {0}.id = {1}.{2}
+        WHERE {1}.gid = ?
+        """.format(table, relation, fk),
+        (gid,)
+    ).fetchall()
     

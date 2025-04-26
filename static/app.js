@@ -1,4 +1,5 @@
 import { UI } from "./UI.js";
+import { Popup } from "./popup.js";
 
 const ROOT_URL = "/"
 
@@ -14,6 +15,10 @@ let sidebarUI = new UI(document.getElementById("game-info").innerHTML);
 
 let selectedRow = null;
 let selectedRowID = null;
+
+let welcomePopup = new Popup("Welcome", "{0}");
+welcomePopup.render(["Welcome to ItchIoViewer! Click the X in the top left to close this popup."]);
+welcomePopup.open();
 
 // initial render
 render();

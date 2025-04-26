@@ -1,0 +1,32 @@
+.popup {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+
+    min-width: 20rem;
+    width: 40%;
+    min-height: 5rem;
+    height: auto;
+
+    resize: both;
+    overflow: scroll;
+
+    display: flex;
+
+    background-color: white;
+    
+}
+
+.popup fieldset {
+    width: 100%;
+}
+
+.popup fieldset legend label {
+    cursor: move;
+}
+
+.popup-title-bar {
+    display: flex;
+    gap: 0.5rem;
+    user-select: none;
+}

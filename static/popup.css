@@ -30,3 +30,8 @@
     gap: 0.5rem;
     user-select: none;
 }
+
+.two-column {
+    display: grid;
+    grid-template-columns: auto auto;
+}

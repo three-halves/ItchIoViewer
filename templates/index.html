@@ -12,7 +12,7 @@
     <div class="app-container">
         <fieldset class="main">
             <legend>ItchIoViewer</legend>
-            <form class="form" method="post">
+            <!-- <form class="form" method="post">
                 <fieldset>
                     <legend>Create Row</legend>
                     <input type="text" id="name" name="name" placeholder="z?Game"/>
@@ -36,13 +36,20 @@
                 </fieldset>
             </form>
     
-            <form class="form" method="post" action="{{ url_for('delete') }}">
+            <form class="form" method="post" action="{{ url_for('form_delete') }}">
                 <fieldset>
                     <legend>Delete Row</legend>
                     <input type="number" id="id" name="id"/>
                     <button type="submit">go</button>
                 </fieldset>
-            </form>
+            </form> -->
+
+            <fieldset>
+                <legend>Tools</legend>
+                    <button id="add-game">Add Game</button>
+                    <button>Fuzzy Search</button>
+                    <button>Advanced Search</button>
+            </fieldset>
     
             <table id="table">
                 <tr>
@@ -65,7 +72,14 @@
                 <p>{3}</p>
                 <p>{4}</p>
                 <a href="{5}">{5}</a>
-                
+
+                <fieldset>
+                    <legend>Options</legend>
+                    <button data-gid="{6}" id="add-tag-button">Add Tag</button>
+                    <button data-gid="{6}" id="edit-game-button">Edit Game</button>
+                    <button type="button" data-gid="{6}" id="delete-game">Delete Game</button>
+                </fieldset>
+
             </div>
         </fieldset>
     </div>

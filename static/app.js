@@ -16,9 +16,9 @@ let sidebarUI = new UI(document.getElementById("game-info").innerHTML);
 let selectedRow = null;
 let selectedRowID = null;
 
-let welcomePopup = new Popup("Welcome", "{0}");
-welcomePopup.render(["Welcome to ItchIoViewer! Click the X in the top left to close this popup."]);
-welcomePopup.open();
+// let welcomePopup = new Popup("Welcome", "{0}");
+// welcomePopup.render(["Welcome to ItchIoViewer! Click the X in the top left to close this popup."]);
+// welcomePopup.open();
 
 // initial render
 render();
@@ -60,15 +60,21 @@ function selectRow(row) {
             data[3], 
             await getAssociatedNamesFromTable("developer", selectedRowID), 
             await getAssociatedNamesFromTable("publisher", selectedRowID),
-                data[4]]);
+            data[4],
+            selectedRowID
+            ]);
         infoPlaceholder.hidden = true;
         sidebarRef.hidden = false;
+        document.getElementById("delete-game").addEventListener("click", deleteGame);
     });
 }
 
 function deselectRow(row) {
     row.classList.remove("selected");
     selectedRow = null;
+
+    infoPlaceholder.hidden = false;
+    sidebarRef.hidden = true;
 }
 
 // assumes name property is second and that proper api endpoints are implemented
@@ -122,6 +128,38 @@ function render() {
             tableRef.appendChild(tr);
         }
     
+    });
+
+}
+
+function addGamePopup() {
+    let gamePopup = new Popup("Add Game", "{0}");
+    gamePopup.render(`
+        <form class="form" method="post">
+            <div class="two-column">
+                <label for="name">Name: </label>
+                <input type="text" id="name" name="name" placeholder="z?Game"/>
+                <label for="rating">Rating: </label>
+                <input type="number" step="0.1" id="rating" name="rating" placeholder="5"/>
+                <label for="genre">Genre: </label>
+                <input type="text" id="genre" name="genre" placeholder="Platformer"/>
+                <label for="store_links">Store Links: </label>
+                <input type="text" id="store_links" name="store_links" placeholder="threehalves.itch.io/zgame"/>
+            </div>
+
+            <button type="submit">go</button>
+            </form>
+        `);
+    gamePopup.open();
+}
+
+document.getElementById("add-game").addEventListener("click", addGamePopup);
+
+function deleteGame(e) {
+    fetch(ROOT_URL + `api/game/delete/${e.target.getAttribute("data-gid")}`)
+    .then(() => {
+        deselectRow(selectedRow);
+        render();
     });
 
 }

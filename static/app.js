@@ -60,7 +60,7 @@ function selectRow(row) {
             data.genre, 
             await getAssociatedNamesFromTable("developer", data.id), 
             await getAssociatedNamesFromTable("publisher", data.id),
-            data[4],
+            data.store_links,
             selectedRowID
             ]);
         infoPlaceholder.hidden = true;

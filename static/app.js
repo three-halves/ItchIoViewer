@@ -55,11 +55,11 @@ function selectRow(row) {
     .then(response => response.json())
     .then(async (data) => {
         sidebarRef.innerHTML = sidebarUI.render(
-            [data[1], 
-            data[2], 
-            data[3], 
-            await getAssociatedNamesFromTable("developer", selectedRowID), 
-            await getAssociatedNamesFromTable("publisher", selectedRowID),
+            [data.name, 
+            data.rating, 
+            data.genre, 
+            await getAssociatedNamesFromTable("developer", data.id), 
+            await getAssociatedNamesFromTable("publisher", data.id),
             data[4],
             selectedRowID
             ]);
@@ -84,10 +84,10 @@ async function getAssociatedNamesFromTable(table, gid) {
     .then(response => response.json())
     .then(data => {
         try {
-            aString = data[0][1];
+            aString = data[0].name;
             for (const asc of data.slice(1))
             {
-                aString += ", " + asc[1];
+                aString += ", " + asc.name;
             }
         }
         catch {
@@ -109,7 +109,6 @@ function render() {
     .then(async (data) => {
         // console.log(data);
         for (const entry of data) {
-            let id = entry[0];
             // create row in table for each game
             let tr = document.createElement("tr");
 
@@ -119,7 +118,7 @@ function render() {
             });
 
             // get developer name for main table
-            [id, entry[1], entry[2], await getAssociatedNamesFromTable("developer", id)].forEach(col => {
+            [entry.id, entry.name, entry.rating, await getAssociatedNamesFromTable("developer", entry.id)].forEach(col => {
                 var td = document.createElement("td");
                 td.innerHTML = col;
                 tr.appendChild(td);

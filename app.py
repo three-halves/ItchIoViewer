@@ -47,19 +47,20 @@ def create_app():
     
     @app.route('/api/games', methods=['GET',])
     def get_games():
-        return json.dumps([tuple(row) for row in db.get_games()])
+        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_games()])
 
 
     @app.route('/api/game/<id>', methods=['GET',])
     def get_game(id):
-        return json.dumps(tuple(db.get_game(id)))
+        game = db.get_game(id);
+        return json.dumps(dict(zip(game.keys(), game)))
     
     @app.route('/api/developers/<gid>', methods=['GET',])
     def get_developers_by_game(gid):
-        return json.dumps([tuple(row) for row in db.get_table_by_game("developer", "developed_game", "did", gid)])
+        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("developer", "developed_game", "did", gid)])
     
     @app.route('/api/publishers/<gid>', methods=['GET',])
     def get_publishers_by_game(gid):
-        return json.dumps([tuple(row) for row in db.get_table_by_game("publisher", "published_game", "pid", gid)])
+        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("publisher", "published_game", "pid", gid)])
     
     return app

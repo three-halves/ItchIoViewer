@@ -49,7 +49,6 @@ def create_app():
     def get_games():
         return json.dumps([dict(zip(row.keys(), row)) for row in db.get_games()])
 
-
     @app.route('/api/game/<id>', methods=['GET',])
     def get_game(id):
         game = db.get_game(id);
@@ -57,10 +56,20 @@ def create_app():
     
     @app.route('/api/developers/<gid>', methods=['GET',])
     def get_developers_by_game(gid):
-        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("developer", "developed_game", "did", gid)])
+        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("developer", "developed_game", "id", "did", gid)])
     
     @app.route('/api/publishers/<gid>', methods=['GET',])
     def get_publishers_by_game(gid):
-        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("publisher", "published_game", "pid", gid)])
+        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("publisher", "published_game", "id", "pid", gid)])
+    
+    @app.route('/api/tags/<gid>', methods=['GET',])
+    def get_tags_by_game(gid):
+        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("tag", "tagged_with", "name", "tname", gid)])
+    
+    @app.route('/api/tag', methods=["POST",])
+    def add_tag():
+        data = request.form
+        db.add_tag(data)
+        return redirect(url_for('index'))
     
     return app

@@ -3,8 +3,14 @@ import { Popup } from "./popup.js";
 
 const ROOT_URL = "/"
 
-let formButtons = Array.from(document.getElementsByClassName("form"));
-formButtons.forEach((element) => element.addEventListener('submit', handleSubmit));
+function refreshFormListeners()
+{
+    let formButtons = Array.from(document.getElementsByClassName("form"));
+    formButtons.forEach((element) => element.removeEventListener('submit', handleSubmit));
+    formButtons.forEach((element) => element.addEventListener('submit', handleSubmit));
+}
+
+refreshFormListeners();
 
 const tableRef = document.getElementById("table");
 const tableBase = tableRef.innerHTML;
@@ -14,6 +20,7 @@ let sidebarRef = document.getElementById("game-info");
 let sidebarUI = new UI(document.getElementById("game-info").innerHTML);
 
 let selectedRow = null;
+let selectedRowData = null
 let selectedRowID = null;
 
 // let welcomePopup = new Popup("Welcome", "{0}");
@@ -26,26 +33,31 @@ render();
 // catch form submits and make appropriate fetch call
 function handleSubmit(event) { 
     let data = new FormData() 
+    
+    console.log(event.srcElement.getAttribute("data-reselect"));
+    // check form flags through data attributes
+    if (event.srcElement.getAttribute("data-gid") !== undefined) {
+        data.append("gid", event.srcElement.getAttribute("data-gid"))
+    }
     // get form values
     Array.from(event.srcElement.elements).forEach((element) => {
-        if (element.tagName.toLowerCase() == "input") {
-            // console.log(element.name + " : " + element.value)
+        if (element.tagName.toLowerCase() === "input") {
             data.append(element.name, element.value);
         }
     });
 
     // make fetch call
-    fetch(event.srcElement.action == null ? ROOT_URL : event.srcElement.action, {
+    fetch(event.srcElement.action === null ? ROOT_URL : event.srcElement.action, {
         "method": "POST",
         "body": data,
     })
-    .then(render)
+    .then(render);
 
     event.preventDefault();
 }
 
 function selectRow(row) {
-    if (selectedRow != null) deselectRow(selectedRow);    
+    if (selectedRow !== null && row !== selectedRow) deselectRow(selectedRow);   
     selectedRow = row;
     selectedRowID = row.children[0].innerHTML;
     selectedRow.classList.add("selected");
@@ -54,6 +66,7 @@ function selectRow(row) {
     fetch(ROOT_URL + `api/game/${selectedRowID}`)
     .then(response => response.json())
     .then(async (data) => {
+        selectedRowData = data;
         sidebarRef.innerHTML = sidebarUI.render(
             [data.name, 
             data.rating, 
@@ -61,17 +74,20 @@ function selectRow(row) {
             await getAssociatedNamesFromTable("developer", data.id), 
             await getAssociatedNamesFromTable("publisher", data.id),
             data.store_links,
-            selectedRowID
+            await getAssociatedNamesFromTable("tag", data.id),
+            data.id
             ]);
         infoPlaceholder.hidden = true;
         sidebarRef.hidden = false;
         document.getElementById("delete-game").addEventListener("click", deleteGame);
+        document.getElementById("tag-game").addEventListener("click", tagGamePopup);
     });
 }
 
 function deselectRow(row) {
     row.classList.remove("selected");
     selectedRow = null;
+    selectedRowData = null;
 
     infoPlaceholder.hidden = false;
     sidebarRef.hidden = true;
@@ -125,10 +141,10 @@ function render() {
             });
 
             tableRef.appendChild(tr);
-        }
-    
-    });
+            if (selectedRowData !== null && entry.id === selectedRowData.id) selectRow(tr);
 
+        }
+    });
 }
 
 function addGamePopup() {
@@ -150,6 +166,24 @@ function addGamePopup() {
             </form>
         `);
     gamePopup.open();
+    refreshFormListeners();
+}
+
+function tagGamePopup() {
+    let tagPopup = new Popup("Add Tag", 
+        `<form class="form" method="post" action="/api/tag" data-gid={1} data-reselect>
+            <p>Tagging {0}...</p>
+            <div class="two-column">
+                <label for="tag-name">Tag Name: </label>
+                <input type="text" id="tag" name="name" placeholder="Local Multiplayer"/>
+            </div>
+        <button type="submit" onclick="close">go</button>
+        </form>`
+    );
+
+    tagPopup.render([selectedRowData.name, selectedRowData.id]);
+    tagPopup.open();
+    refreshFormListeners();
 }
 
 document.getElementById("add-game").addEventListener("click", addGamePopup);

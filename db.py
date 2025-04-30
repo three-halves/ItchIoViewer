@@ -45,6 +45,20 @@ def add_game(data):
     )
     db.commit()
 
+def add_tag(data):
+    db = get_db()
+    db.execute(
+        'INSERT INTO tag (name) VALUES (:name)',
+        data
+    )
+
+    db.execute(
+        'INSERT INTO tagged_with (gid, tname) VALUES (:gid, :name)',
+        data
+    )
+
+    db.commit()
+
 def get_games():
     return get_db().execute(
         'SELECT * FROM game'
@@ -76,13 +90,13 @@ def delete_game(id: str):
     )
     db.commit()
 
-def get_table_by_game(table: str, relation: str, fk: str, gid: str):
+def get_table_by_game(table: str, relation: str, key: str, fk: str, gid: str):
     return get_db().execute(
-        """SELECT id, name FROM {0}
+        """SELECT {3}, name FROM {0}
         JOIN {1}
-        ON {0}.id = {1}.{2}
+        ON {0}.{3} = {1}.{2}
         WHERE {1}.gid = ?
-        """.format(table, relation, fk),
+        """.format(table, relation, fk, key),
         (gid,)
     ).fetchall()
     

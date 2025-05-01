@@ -59,7 +59,7 @@ function handleSubmit(event) {
 }
 
 function selectRow(row) {
-    if (selectedRow !== null && row !== selectedRow) deselectRow(selectedRow);   
+    if (selectedRow !== null && row !== selectedRow) deselectRow(selectedRow, false);   
     selectedRow = row;
     selectedRowID = row.children[0].innerHTML;
     selectedRow.classList.add("selected");
@@ -88,13 +88,13 @@ function selectRow(row) {
     });
 }
 
-function deselectRow(row) {
+function deselectRow(row, remove_sidebar=true) {
     row.classList.remove("selected");
     selectedRow = null;
     selectedRowData = null;
 
-    infoPlaceholder.hidden = false;
-    sidebarRef.hidden = true;
+    infoPlaceholder.hidden = !remove_sidebar;
+    sidebarRef.hidden = remove_sidebar;
 }
 
 // assumes name property is second and that proper api endpoints are implemented

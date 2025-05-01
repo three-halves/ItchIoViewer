@@ -14,6 +14,7 @@ body {
     width: 60rem;
     resize: horizontal;
     overflow-x: scroll;
+    height: 90vh;
 }
 
 .sidebar {

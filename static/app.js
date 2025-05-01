@@ -12,12 +12,14 @@ function refreshFormListeners()
 
 refreshFormListeners();
 
-const tableRef = document.getElementById("table");
+let tableRef = document.getElementById("table");
 const tableBase = tableRef.innerHTML;
+tableRef.remove();
 const infoPlaceholder = document.getElementById("info-placeholder");
 
 let sidebarRef = document.getElementById("game-info");
 let sidebarUI = new UI(document.getElementById("game-info").innerHTML);
+let mainRef = document.getElementById("main");
 
 let selectedRow = null;
 let selectedRowData = null
@@ -126,7 +128,8 @@ function render_full() {
 
 // re-render the games table
 async function render(data) {
-    tableRef.innerHTML = tableBase;
+    let newTable = document.createElement("table");
+    newTable.innerHTML = tableBase;
     for (const entry of data) {
         // create row in table for each game
         let tr = document.createElement("tr");
@@ -143,9 +146,12 @@ async function render(data) {
             tr.appendChild(td);
         });
 
-        tableRef.appendChild(tr);
+        newTable.appendChild(tr);
         if (selectedRowData !== null && entry.id === selectedRowData.id) selectRow(tr);
     }
+
+    mainRef.removeChild(mainRef.lastChild);
+    mainRef.appendChild(newTable);
 }
 
 function addGamePopup() {

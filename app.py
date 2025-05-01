@@ -42,7 +42,7 @@ def create_app():
     
     @app.route('/api/game/update', methods=['POST',])
     def update():
-        db.update_game(request.form["id"], request.form["name"], request.form["developer"])
+        db.update_game(request.form["gid"], request.form["name"], request.form["rating"], request.form["genre"], request.form["store_links"])
         return redirect(url_for('index'))
     
     @app.route('/api/games', methods=['GET',])

@@ -28,13 +28,13 @@ let selectedRowID = null;
 // welcomePopup.open();
 
 // initial render
-render();
+render_full();
 
 // catch form submits and make appropriate fetch call
 function handleSubmit(event) { 
     let data = new FormData() 
     
-    console.log(event.srcElement.getAttribute("data-reselect"));
+    // console.log(event.srcElement.getAttribute("data-reselect"));
     // check form flags through data attributes
     if (event.srcElement.getAttribute("data-gid") !== undefined) {
         data.append("gid", event.srcElement.getAttribute("data-gid"))
@@ -51,7 +51,7 @@ function handleSubmit(event) {
         "method": "POST",
         "body": data,
     })
-    .then(render);
+    .then(render_full);
 
     event.preventDefault();
 }
@@ -81,6 +81,8 @@ function selectRow(row) {
         sidebarRef.hidden = false;
         document.getElementById("delete-game").addEventListener("click", deleteGame);
         document.getElementById("tag-game").addEventListener("click", tagGamePopup);
+        document.getElementById("edit-game").addEventListener("click", editGamePopup);
+
     });
 }
 
@@ -114,37 +116,36 @@ async function getAssociatedNamesFromTable(table, gid) {
     return aString;
 }
 
-// re-render the games table
-function render() {
-    // console.log("render");
-    
-    tableRef.innerHTML = tableBase;
-
+function render_full() {
     fetch(ROOT_URL + "api/games")
     .then(response => response.json())
     .then(async (data) => {
-        // console.log(data);
-        for (const entry of data) {
-            // create row in table for each game
-            let tr = document.createElement("tr");
-
-            // click event
-            tr.addEventListener("click", function (e) {
-                selectRow(this);
-            });
-
-            // get developer name for main table
-            [entry.id, entry.name, entry.rating, await getAssociatedNamesFromTable("developer", entry.id)].forEach(col => {
-                var td = document.createElement("td");
-                td.innerHTML = col;
-                tr.appendChild(td);
-            });
-
-            tableRef.appendChild(tr);
-            if (selectedRowData !== null && entry.id === selectedRowData.id) selectRow(tr);
-
-        }
+        render(data)   
     });
+}
+
+// re-render the games table
+async function render(data) {
+    tableRef.innerHTML = tableBase;
+    for (const entry of data) {
+        // create row in table for each game
+        let tr = document.createElement("tr");
+
+        // click event
+        tr.addEventListener("click", function (e) {
+            selectRow(this);
+        });
+
+        // get developer name for main table
+        [entry.id, entry.name, entry.rating, await getAssociatedNamesFromTable("developer", entry.id)].forEach(col => {
+            var td = document.createElement("td");
+            td.innerHTML = col;
+            tr.appendChild(td);
+        });
+
+        tableRef.appendChild(tr);
+        if (selectedRowData !== null && entry.id === selectedRowData.id) selectRow(tr);
+    }
 }
 
 function addGamePopup() {
@@ -171,18 +172,41 @@ function addGamePopup() {
 
 function tagGamePopup() {
     let tagPopup = new Popup("Add Tag", 
-        `<form class="form" method="post" action="/api/tag" data-gid={1} data-reselect>
+        `<form class="form" method="post" action="/api/tag" data-gid={1} >
             <p>Tagging {0}...</p>
             <div class="two-column">
                 <label for="tag-name">Tag Name: </label>
                 <input type="text" id="tag" name="name" placeholder="Local Multiplayer"/>
             </div>
-        <button type="submit" onclick="close">go</button>
+        <button type="submit">go</button>
         </form>`
     );
 
     tagPopup.render([selectedRowData.name, selectedRowData.id]);
     tagPopup.open();
+    refreshFormListeners();
+}
+
+function editGamePopup() {
+    let popup = new Popup("Edit Game", 
+        `<form class="form" method="post" action="/api/game/update" data-gid={4}>
+            <div class="two-column">
+                <label for="name">Name: </label>
+                <input type="text" id="name" name="name" placeholder="z?Game" value={0} />
+                <label for="rating">Rating: </label>
+                <input type="number" step="0.1" id="rating" name="rating" placeholder="5" value={1} />
+                <label for="genre">Genre: </label>
+                <input type="text" id="genre" name="genre" placeholder="Platformer" value={2} />
+                <label for="store_links">Store Links: </label>
+                <input type="text" id="store_links" name="store_links" placeholder="threehalves.itch.io/zgame" value={3} />
+            </div>
+
+            <button type="submit">go</button>
+            </form>`
+    );
+
+    popup.render([selectedRowData.name, selectedRowData.rating, selectedRowData.genre, selectedRowData.store_links, selectedRowData.id]);
+    popup.open();
     refreshFormListeners();
 }
 
@@ -192,7 +216,7 @@ function deleteGame(e) {
     fetch(ROOT_URL + `api/game/delete/${e.target.getAttribute("data-gid")}`)
     .then(() => {
         deselectRow(selectedRow);
-        render();
+        render_full();
     });
 
 }

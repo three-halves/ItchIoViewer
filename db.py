@@ -70,15 +70,15 @@ def get_game(id):
         (id,)
     ).fetchone()
 
-def update_game(id: str, name: str, developer: str):
+def update_game(id: str, name: str, rating: str, genre: str, store_links: str):
     db = get_db()
     db.execute(
         """
         UPDATE game
-        SET name = ?, developer = ?
+        SET name = ?, rating = ?, genre = ?, store_links = ?
         WHERE id = ?;
         """,
-        (name, developer, id)
+        (name, rating, genre, store_links, id)
     )
     db.commit()
 

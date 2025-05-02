@@ -21,6 +21,8 @@ def create_app():
     db.init_app(app)
 
     # define routes
+
+    # index page
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
@@ -30,11 +32,13 @@ def create_app():
 
         return render_template("index.html")
     
+    # delete by form
     @app.route('/api/game/delete', methods=['POST',])
     def form_delete():
         db.delete_game(request.form["id"])
         return redirect(url_for('index'))
     
+    # delete game by id
     @app.route('/api/game/delete/<gid>', methods=['GET',])
     def delete(gid):
         db.delete_game(gid)
@@ -45,10 +49,14 @@ def create_app():
         db.update_game(request.form["gid"], request.form["name"], request.form["rating"], request.form["genre"], request.form["store_links"])
         return redirect(url_for('index'))
     
-    @app.route('/api/games', methods=['GET',])
+    # Get all games from game table, potentially filtering based on given form
+    @app.route('/api/games', methods=['GET', 'POST',])
     def get_games():
-        return json.dumps([dict(zip(row.keys(), row)) for row in db.get_games()])
-
+        if request.method == 'POST':
+            return json.dumps([dict(zip(row.keys(), row)) for row in db.get_filtered_games(request.form)])
+        else: 
+            return json.dumps([dict(zip(row.keys(), row)) for row in db.get_games()])
+    
     @app.route('/api/game/<id>', methods=['GET',])
     def get_game(id):
         game = db.get_game(id);

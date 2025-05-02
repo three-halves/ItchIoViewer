@@ -56,6 +56,7 @@ CREATE TABLE tagged_with (
     tname TEXT NOT NULL,
     FOREIGN KEY(gid) REFERENCES game(id),
     FOREIGN KEY(tname) REFERENCES tag(name)
+    UNIQUE (gid, tname) ON CONFLICT IGNORE
 );
 
 DROP TABLE IF EXISTS platform;

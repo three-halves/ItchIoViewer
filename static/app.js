@@ -35,9 +35,8 @@ render_full();
 function handleSubmit(event) { 
     let data = new FormData() 
     
-    // console.log(event.srcElement.getAttribute("data-reselect"));
     // check form flags through data attributes
-    if (event.srcElement.getAttribute("data-gid") !== undefined) {
+    if (event.srcElement.getAttribute("data-gid") !== null) {
         data.append("gid", event.srcElement.getAttribute("data-gid"))
     }
     // get form values
@@ -48,11 +47,24 @@ function handleSubmit(event) {
     });
 
     // make fetch call
-    fetch(event.srcElement.action === null ? ROOT_URL : event.srcElement.action, {
-        "method": "POST",
-        "body": data,
-    })
-    .then(render_full);
+    // check if call returns table data to render differently
+    if (event.srcElement.getAttribute("data-render") !== null) {
+        fetch(event.srcElement.action === null ? ROOT_URL : event.srcElement.action, {
+            "method": "POST",
+            "body": data,
+        })
+        .then(response => response.json())
+        .then(data => {
+            render(data)});
+    }
+    // otherwise, render all games
+    else {
+        fetch(event.srcElement.action === null ? ROOT_URL : event.srcElement.action, {
+            "method": "POST",
+            "body": data,
+        })
+        .then(render_full);
+    }
 
     event.preventDefault();
 }
@@ -235,7 +247,33 @@ function editGamePopup() {
     refreshFormListeners();
 }
 
-document.getElementById("add-game").addEventListener("click", addGamePopup);
+function advancedSearchPopup() {
+    let popup = new Popup("Advanced Search", 
+        `<p>Search queries will be matched exactly. Queries left blank will not apply.</p>
+        <form class="form" method="get" action="/api/games" data-render>
+            <div class="two-column">
+                <label for="name">Name: </label>
+                <input type="text" id="name" name="game.name" placeholder="z?Game" />
+                <label for="rating">Rating: </label>
+                <input type="number" step="0.1" id="rating" name="game.rating" placeholder="5" />
+                <label for="genre">Genre: </label>
+                <input type="text" id="genre" name="game.genre" placeholder="Platformer" />
+                <label for="genre">Developer: </label>
+                <input type="text" id="developer" name="developer.name" placeholder="Threehalves" />
+                <label for="genre">Publisher: </label>
+                <input type="text" id="publisher" name="publisher.name" placeholder="Lemniscate Games" />
+                <label for="Tag">Tag: </label>
+                <input type="text" id="tag" name="tag.name" placeholder="Local Multiplayer" />
+            </div>
+
+            <button type="submit">go</button>
+            </form>`
+    );
+
+    popup.render();
+    popup.open();
+    refreshFormListeners();
+}
 
 function deleteGame(e) {
     fetch(ROOT_URL + `api/game/delete/${e.target.getAttribute("data-gid")}`)
@@ -245,3 +283,6 @@ function deleteGame(e) {
     });
 
 }
+
+document.getElementById("add-game").addEventListener("click", addGamePopup);
+document.getElementById("advanced-search").addEventListener("click", advancedSearchPopup);

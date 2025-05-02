@@ -47,10 +47,13 @@ def add_game(data):
 
 def add_tag(data):
     db = get_db()
-    db.execute(
-        'INSERT INTO tag (name) VALUES (:name)',
-        data
-    )
+    try:
+        db.execute(
+            'INSERT INTO tag (name) VALUES (:name)',
+            data
+        )
+    except:
+        pass
 
     db.execute(
         'INSERT INTO tagged_with (gid, tname) VALUES (:gid, :name)',
@@ -62,6 +65,35 @@ def add_tag(data):
 def get_games():
     return get_db().execute(
         'SELECT * FROM game'
+    ).fetchall()
+
+def get_filtered_games(form: dict):
+    where = "WHERE "
+    for key in form.keys():
+        if form[key] != '':
+            where += f"{key} = \"{form[key]}\" AND "
+    
+    # remove trailing AND
+    where = where[:-4] if (len(where) > 6) else ""
+    
+    return get_db().execute(
+        """
+        SELECT DISTINCT game.id, game.name, rating, genre, store_links
+        FROM game
+        JOIN developed_game
+        ON game.id == developed_game.gid
+        JOIN developer
+        ON developed_game.did = developer.id
+        LEFT JOIN published_game
+        ON game.id == published_game.gid
+        LEFT JOIN publisher
+        ON published_game.pid = publisher.id
+        LEFT JOIN tagged_with
+        ON game.id == tagged_with.gid
+        LEFT JOIN tag
+        ON tagged_with.tname = tag.name
+        {0}
+        """.format(where)
     ).fetchall()
 
 def get_game(id):

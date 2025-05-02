@@ -104,7 +104,7 @@ def get_table_by_game(table: str, relation: str, key: str, fk: str, gid: str):
 def get_developer_stats(did):
     return get_db().execute(
         """
-        SELECT COUNT(gid) as game_count, AVG(rating) as average_rating FROM developer
+        SELECT COUNT(gid) as game_count, AVG(rating) as average_rating, MAX(rating) as max_rating, MIN(rating) as min_rating FROM developer
         JOIN developed_game
         ON developer.id = developed_game.did
         JOIN game

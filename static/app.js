@@ -1,7 +1,6 @@
 import { UI } from "./UI.js";
 import { Popup } from "./popup.js";
-
-const ROOT_URL = "/"
+import { ROOT_URL } from "./globals.js";
 
 function refreshFormListeners()
 {
@@ -73,7 +72,7 @@ function selectRow(row) {
             [data.name, 
             data.rating, 
             data.genre, 
-            await getAssociatedNamesFromTable("developer", data.id), 
+            await developerDataToProfileLinks(await getAssociatedDataFromTable("developer", data.id)), 
             await getAssociatedNamesFromTable("publisher", data.id),
             data.store_links,
             await getAssociatedNamesFromTable("tag", data.id),
@@ -86,6 +85,15 @@ function selectRow(row) {
         document.getElementById("edit-game").addEventListener("click", editGamePopup);
 
     });
+}
+
+// returns innerhtml string of developer links to be displayed in sidebar
+async function developerDataToProfileLinks(data) {
+    let s = "";
+    data.forEach(entry => {
+        s += `<a href="javascript:void(0)" onclick="openDeveloperProfile('${entry.id}', '${entry.name}')">${entry.name}</a>`
+    });
+    return s;
 }
 
 function deselectRow(row, remove_sidebar=true) {
@@ -117,6 +125,17 @@ async function getAssociatedNamesFromTable(table, gid) {
     });
     return aString;
 }
+
+async function getAssociatedDataFromTable(table, gid) {
+    let dataArr = []
+    await fetch(ROOT_URL + `api/${table}s/${gid}`)
+    .then(response => response.json())
+    .then(data => {
+            dataArr = data;
+        });
+
+    return dataArr;
+};
 
 function render_full() {
     fetch(ROOT_URL + "api/games")
@@ -198,13 +217,13 @@ function editGamePopup() {
         `<form class="form" method="post" action="/api/game/update" data-gid={4}>
             <div class="two-column">
                 <label for="name">Name: </label>
-                <input type="text" id="name" name="name" placeholder="z?Game" value={0} />
+                <input type="text" id="name" name="name" placeholder="z?Game" value="{0}" />
                 <label for="rating">Rating: </label>
-                <input type="number" step="0.1" id="rating" name="rating" placeholder="5" value={1} />
+                <input type="number" step="0.1" id="rating" name="rating" placeholder="5" value="{1}" />
                 <label for="genre">Genre: </label>
-                <input type="text" id="genre" name="genre" placeholder="Platformer" value={2} />
+                <input type="text" id="genre" name="genre" placeholder="Platformer" value="{2}" />
                 <label for="store_links">Store Links: </label>
-                <input type="text" id="store_links" name="store_links" placeholder="threehalves.itch.io/zgame" value={3} />
+                <input type="text" id="store_links" name="store_links" placeholder="threehalves.itch.io/zgame" value="{3}" />
             </div>
 
             <button type="submit">go</button>

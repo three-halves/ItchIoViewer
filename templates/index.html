@@ -6,6 +6,7 @@
     <title>ItchIoViewer</title>
     <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
     <link rel="stylesheet" href={{ url_for('static', filename='popup.css') }}>
+    <script src={{ url_for('static', filename='globals.js')}} type="module"></script>
     <script src={{ url_for('static', filename='app.js')}} type="module"></script>
 </head>
 <body>
@@ -69,7 +70,7 @@
                 <p>{0}</p>
                 <p>Rating: {1} / 5</p>
                 <p>Genre: {2}</p>
-                <p>Developer(s): {3}</p>
+                <p style="display: flex; flex-wrap: wrap; gap: 0 0.25rem">Developer(s): {3}</p>
                 <p>Publisher(s): {4}</p>
                 <a href="{5}">{5}</a>
                 <p>Tag(s): {6}</p>

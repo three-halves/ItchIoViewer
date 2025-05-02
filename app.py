@@ -58,6 +58,11 @@ def create_app():
     def get_developers_by_game(gid):
         return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("developer", "developed_game", "id", "did", gid)])
     
+    @app.route('/api/developer/stats/<did>', methods=['GET',])
+    def get_developer_stats(did):
+        stats = db.get_developer_stats(did)
+        return json.dumps(dict(zip(stats.keys(), stats)))
+    
     @app.route('/api/publishers/<gid>', methods=['GET',])
     def get_publishers_by_game(gid):
         return json.dumps([dict(zip(row.keys(), row)) for row in db.get_table_by_game("publisher", "published_game", "id", "pid", gid)])

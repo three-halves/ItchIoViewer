@@ -54,6 +54,7 @@ export class Popup extends UI {
         this.popupContent.innerHTML = super.render(params);
     }
 
+    // mouse handlers to provide drag functionality
     mouseDownHandler(e) {
         e.preventDefault();
         this.isDragging = true;

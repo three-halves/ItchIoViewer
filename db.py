@@ -92,11 +92,25 @@ def delete_game(id: str):
 
 def get_table_by_game(table: str, relation: str, key: str, fk: str, gid: str):
     return get_db().execute(
-        """SELECT {3}, name FROM {0}
+        """
+        SELECT {3}, name FROM {0}
         JOIN {1}
         ON {0}.{3} = {1}.{2}
         WHERE {1}.gid = ?
         """.format(table, relation, fk, key),
         (gid,)
     ).fetchall()
+
+def get_developer_stats(did):
+    return get_db().execute(
+        """
+        SELECT COUNT(gid) as game_count, AVG(rating) as average_rating FROM developer
+        JOIN developed_game
+        ON developer.id = developed_game.did
+        JOIN game
+        ON developed_game.gid = game.id
+        WHERE developer.id = ?
+        """,
+        (did,)
+    ).fetchone()
     

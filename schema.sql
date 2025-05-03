@@ -45,7 +45,7 @@ CREATE TABLE published_game (
 DROP TABLE IF EXISTS tag;
 
 CREATE TABLE tag (
-    name TEXT PRIMARY KEY,
+    name TEXT PRIMARY KEY
 );
 
 DROP TABLE IF EXISTS tagged_with;

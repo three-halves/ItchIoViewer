@@ -80,9 +80,9 @@ def get_filtered_games(form: dict):
         """
         SELECT DISTINCT game.id, game.name, rating, genre, store_links
         FROM game
-        JOIN developed_game
+        LEFT JOIN developed_game
         ON game.id == developed_game.gid
-        JOIN developer
+        LEFT JOIN developer
         ON developed_game.did = developer.id
         LEFT JOIN published_game
         ON game.id == published_game.gid

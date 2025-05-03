@@ -19,6 +19,7 @@ const infoPlaceholder = document.getElementById("info-placeholder");
 let sidebarRef = document.getElementById("game-info");
 let sidebarUI = new UI(document.getElementById("game-info").innerHTML);
 let mainRef = document.getElementById("main");
+let statusRef = document.getElementById("status");
 
 let selectedRow = null;
 let selectedRowData = null
@@ -29,7 +30,7 @@ let selectedRowID = null;
 // welcomePopup.open();
 
 // initial render
-render_full();
+renderFull();
 
 // catch form submits and make appropriate fetch call
 function handleSubmit(event) { 
@@ -55,7 +56,9 @@ function handleSubmit(event) {
         })
         .then(response => response.json())
         .then(data => {
-            render(data)});
+            render(data)
+            statusRef.innerHTML = "Showing filtered game table."
+        });
     }
     // otherwise, render all games
     else {
@@ -63,7 +66,7 @@ function handleSubmit(event) {
             "method": "POST",
             "body": data,
         })
-        .then(render_full);
+        .then(renderFull);
     }
 
     event.preventDefault();
@@ -149,11 +152,12 @@ async function getAssociatedDataFromTable(table, gid) {
     return dataArr;
 };
 
-function render_full() {
+function renderFull() {
     fetch(ROOT_URL + "api/games")
     .then(response => response.json())
     .then(async (data) => {
-        render(data)   
+        await render(data);
+        statusRef.innerHTML = "Showing full game table." 
     });
 }
 
@@ -247,8 +251,8 @@ function editGamePopup() {
     refreshFormListeners();
 }
 
-function advancedSearchPopup() {
-    let popup = new Popup("Advanced Search", 
+function filterPopup() {
+    let popup = new Popup("Filter Games", 
         `<p>Search queries will be matched exactly. Queries left blank will not apply.</p>
         <form class="form" method="get" action="/api/games" data-render>
             <div class="two-column">
@@ -279,10 +283,11 @@ function deleteGame(e) {
     fetch(ROOT_URL + `api/game/delete/${e.target.getAttribute("data-gid")}`)
     .then(() => {
         deselectRow(selectedRow);
-        render_full();
+        renderFull();
     });
 
 }
 
 document.getElementById("add-game").addEventListener("click", addGamePopup);
-document.getElementById("advanced-search").addEventListener("click", advancedSearchPopup);
+document.getElementById("filter").addEventListener("click", filterPopup);
+document.getElementById("clear-filter").addEventListener("click", renderFull);

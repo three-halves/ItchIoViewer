@@ -1,6 +1,8 @@
 import db
 import os
 import json
+import urllib.request
+import re
 from flask import (
     Flask,
     render_template,
@@ -83,5 +85,30 @@ def create_app():
         data = request.form
         db.add_tag(data)
         return redirect(url_for('index'))
+    
+    @app.route('/api/itchioparse', methods=["POST",])
+    def parse_itch_link():
+            try:
+                fp = urllib.request.urlopen(request.form["url"])
+                bytes = fp.read()
+
+                htmlstr = bytes.decode("utf8")
+                fp.close()
+
+                data = dict()
+
+                # parse game name
+                result = re.search(r'.*<h1.*itemprop="name".*?>(.*?)<', htmlstr)
+                data.update({"name": result.group(1)})
+                # parse genre name
+                result = re.search(r'.*\/genre-.*?name":"(.*?)"', htmlstr)
+                data.update({"genre": result.group(1)})
+                # add store link from given url
+                data.update({"store_links": request.form["url"]})
+                data.update({"rating": "null"})
+                db.add_game(data)
+            except:
+                print("Invalid Link.")
+            return redirect(url_for("index"))
     
     return app

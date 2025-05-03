@@ -279,6 +279,23 @@ function filterPopup() {
     refreshFormListeners();
 }
 
+function itchPopup() {
+    let tagPopup = new Popup("Add Game From ItchIo", 
+        `<form class="form" method="post" action="/api/itchioparse" >
+            <p>Paste the Itch.Io link for the desired game to add. Not all game attributes will be populated.</p>
+            <div class="two-column">
+                <label for="tag-name">ItchIo Link: </label>
+                <input type="text" id="itchlink" name="url" placeholder="https://threehalves.itch.io/zgame"/>
+            </div>
+        <button type="submit">go</button>
+        </form>`
+    );
+
+    tagPopup.render([]);
+    tagPopup.open();
+    refreshFormListeners();
+}
+
 function deleteGame(e) {
     fetch(ROOT_URL + `api/game/delete/${e.target.getAttribute("data-gid")}`)
     .then(() => {
@@ -291,3 +308,4 @@ function deleteGame(e) {
 document.getElementById("add-game").addEventListener("click", addGamePopup);
 document.getElementById("filter").addEventListener("click", filterPopup);
 document.getElementById("clear-filter").addEventListener("click", renderFull);
+document.getElementById("add-itchio").addEventListener("click", itchPopup);

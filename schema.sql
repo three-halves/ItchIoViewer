@@ -46,7 +46,6 @@ DROP TABLE IF EXISTS tag;
 
 CREATE TABLE tag (
     name TEXT PRIMARY KEY,
-    icon INTEGER
 );
 
 DROP TABLE IF EXISTS tagged_with;

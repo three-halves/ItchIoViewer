@@ -98,7 +98,7 @@ function selectRow(row) {
         document.getElementById("delete-game").addEventListener("click", deleteGame);
         document.getElementById("tag-game").addEventListener("click", tagGamePopup);
         document.getElementById("edit-game").addEventListener("click", editGamePopup);
-
+        document.getElementById("edit-developer").addEventListener("click", editDeveloperPopup);
     });
 }
 
@@ -108,7 +108,7 @@ async function developerDataToProfileLinks(data) {
     data.forEach(entry => {
         s += `<a href="javascript:void(0)" onclick="openDeveloperProfile('${entry.id}', '${entry.name}')">${entry.name}</a>`
     });
-    return s;
+    return (s !== "") ? s : "None";
 }
 
 function deselectRow(row, remove_sidebar=true) {
@@ -247,6 +247,26 @@ function editGamePopup() {
     );
 
     popup.render([selectedRowData.name, selectedRowData.rating, selectedRowData.genre, selectedRowData.store_links, selectedRowData.id]);
+    popup.open();
+    refreshFormListeners();
+}
+
+function editDeveloperPopup() {
+    let popup = new Popup("Register Developer", 
+        `<form class="form" method="post" action="/api/developer/" data-gid={0}>
+            <p>Enter developer ID to add an existing developer. Enter developer name to register a new developer.</p>
+            <div class="two-column">
+                <label for="name">Dev ID: </label>
+                <input type="number" id="did" name="did" placeholder="2" />
+                <label for="name">Name: </label>
+                <input type="text" id="name" name="name" placeholder="Threehalves" />
+            </div>
+
+            <button type="submit">go</button>
+            </form>`
+    );
+
+    popup.render([selectedRowData.id]);
     popup.open();
     refreshFormListeners();
 }

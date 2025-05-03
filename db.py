@@ -62,6 +62,23 @@ def add_tag(data):
 
     db.commit()
 
+def add_developer_to_game(gid, did, dname):
+    db = get_db()
+    if did != '':
+        db.execute('INSERT INTO developed_game (did, gid) VALUES (?, ?)',
+            (did, gid)
+        )
+    if dname != '':
+        db.cursor().execute('INSERT INTO developer (name) VALUES (?)',
+            (dname,)
+        )
+        db.commit()
+        print(str(db.cursor().lastrowid))
+        db.cursor().execute('INSERT INTO developed_game (did, gid) VALUES (last_insert_rowid(), ?)',
+            (gid)  
+        )
+    db.commit()
+
 def get_games():
     return get_db().execute(
         'SELECT * FROM game'

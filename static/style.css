@@ -1,6 +1,15 @@
+:root {
+    --primary-bg: #e57977;
+    --dark-bg: #cf5859;
+    --text-bg: snow;
+
+}
+
 body {
     margin: 0;
     color-scheme: light dark;
+    background-color: var(--dark-bg);
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .app-container {
@@ -15,25 +24,72 @@ body {
     resize: horizontal;
     overflow-x: scroll;
     height: 90vh;
+    background-color: var(--primary-bg);
 }
 
 .sidebar {
     overflow-x: scroll;
+    background-color: var(--primary-bg);
 }
 
 table {
     width: 100%;
+    border-spacing: 0.1 0.1rem;
+    padding: 0.5rem;
+    margin-block: 0.5rem;
+    border-radius: 10px;
+    border: 2px solid white;
 }
 
 td, th {
-    border: 1px solid black;
-    padding: 4px;
+    /* border: 1px solid white; */
+    padding: 6px;
+}
+
+tr {
+    margin-block: 0.1rem;
+}
+
+th {
+    background-color:darkgray;
 }
 
 tr:nth-child(even) {
     background-color:gainsboro;
 }
 
+tr:nth-child(odd) {
+    background-color:snow;
+}
+
 tr.selected {
-    background-color: lightblue;
+    background-color: lightcoral;
+    outline: 3px solid var(--dark-bg);
+}
+
+fieldset {
+    border-radius: 10px;
+    border: 2px solid white;
+}
+
+fieldset legend {
+    background-color: var(--text-bg);
+    padding-block: 0.25rem;
+    padding-inline: 0.5rem;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.sidebar-content {
+    background-color: var(--text-bg);
+    padding: 6px;
+    border-radius: 10px;
+    display: block;
+}
+
+#status {
+    background-color: var(--text-bg);
+    padding: 6px;
+    border-radius: 10px;
+    text-align: center;
 }

@@ -76,17 +76,40 @@ CREATE TABLE available_on_platform (
 );
 
 -- Init default values
-INSERT INTO game VALUES (0, 'z?Game', 4.5,  'Platformer', 'https://threehalves.itch.io/zgame');
-INSERT INTO game VALUES (1, 'Mana Cycle', 10.0,  'Puzzle-Party', 'https://store.steampowered.com/app/2864390/Mana_Cycle/');
+INSERT INTO game VALUES (0, 'z?Game', 3.0,  'Platformer', 'https://threehalves.itch.io/zgame');
+INSERT INTO game VALUES (3, 'qBattle', 3.0,  'Fighting', 'https://threehalves.itch.io/qbattle');
+
+INSERT INTO game VALUES (1, 'Mana Cycle', 5.0,  'Puzzle-Party', 'https://store.steampowered.com/app/2864390/Mana_Cycle/');
+INSERT INTO game VALUES (2, 'Morpho Builder', 4.0,  'Platformer', 'https://infinityjka.itch.io/gmtk2024');
+
+INSERT INTO game VALUES (4, 'Bipole V', 5.0,  'RPG', 'https://infinityjka.itch.io/bipole-v');
+
+INSERT INTO game VALUES (5, 'FLIP-FLOP', 4.0,  'Platformer', 'https://iiazui.itch.io/flip-flop');
 
 INSERT INTO publisher VALUES (0, 'Lemniscate Games', 0);
 
 INSERT INTO developer VALUES (0, 'InfinityJKA', 1);
 INSERT INTO developer VALUES (1, 'Jackachulian', 1);
 INSERT INTO developer VALUES (2, 'Threehalves', 1);
+INSERT INTO developer VALUES (3, 'iiAzui', 1);
 
 INSERT INTO published_game VALUES (1, 0);
 INSERT INTO developed_game VALUES (1, 0);
 INSERT INTO developed_game VALUES (1, 1);
 INSERT INTO developed_game VALUES (1, 2);
+INSERT INTO published_game VALUES (2, 0);
+INSERT INTO developed_game VALUES (2, 0);
+INSERT INTO developed_game VALUES (2, 1);
+INSERT INTO developed_game VALUES (2, 2);
+
 INSERT INTO developed_game VALUES (0, 2);
+INSERT INTO developed_game VALUES (3, 2);
+
+INSERT INTO developed_game VALUES (4, 0);
+
+INSERT INTO developed_game VALUES (5, 3);
+
+INSERT INTO tag VALUES ("Multiplayer");
+INSERT INTO tagged_with VALUES(1, "Multiplayer");
+INSERT INTO tagged_with VALUES(5, "Multiplayer");
+INSERT INTO tagged_with VALUES(3, "Multiplayer");
